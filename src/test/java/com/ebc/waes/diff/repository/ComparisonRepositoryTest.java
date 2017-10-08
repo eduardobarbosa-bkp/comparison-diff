@@ -3,7 +3,7 @@ package com.ebc.waes.diff.repository;
 import com.ebc.waes.diff.builder.ComparisonEntityBuilder;
 import com.ebc.waes.diff.config.Configuration;
 import com.ebc.waes.diff.exception.ComparisonException;
-import com.ebc.waes.diff.model.ComparisonEntity;
+import com.ebc.waes.diff.domain.Comparison;
 import com.ebc.waes.diff.test.TextContent;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -50,7 +50,7 @@ public class ComparisonRepositoryTest {
     public void testFindByIdNotFound(){
         //given an id that doesn't match with any comparison
         //when find the entity by id
-        ComparisonEntity entity = repository.findById(ID_NOT_FOUND);
+        Comparison entity = repository.findById(ID_NOT_FOUND);
         //then the entity must be null
         assertThat(entity, nullValue());
     }
@@ -59,25 +59,25 @@ public class ComparisonRepositoryTest {
     public void testFindByIdValid(){
         //given an id that match with a comparison
         //when find the entity by id
-        ComparisonEntity entity = repository.findById(this.id);
+        Comparison entity = repository.findById(this.id);
         //then the entity must not be null and the id must be the same
         assertThat(entity, notNullValue());
         assertThat(entity.getId(), equalTo(this.id));
         assertThat(entity.getLeft(), notNullValue());
         assertThat(entity.getRight(), notNullValue());
-        assertThat(entity.getLeft().getContent(), equalTo(TextContent.SIMPLE_TEXT_CONTENT_BASE64));
-        assertThat(entity.getRight().getContent(), equalTo(TextContent.SIMPLE_TEXT_CONTENT_BASE64));
+        assertThat(entity.getLeft(), equalTo(TextContent.SIMPLE_TEXT_CONTENT_BASE64));
+        assertThat(entity.getRight(), equalTo(TextContent.SIMPLE_TEXT_CONTENT_BASE64));
     }
 
 
     @Test
     public void testPersist(){
         //given a valid comparison entity
-        ComparisonEntity entity = ComparisonEntityBuilder.aInstance().build();
+        Comparison entity = ComparisonEntityBuilder.aInstance().build();
         //when persist the entity
         repository.persist(entity);
         //then the entity could be find in the database and should be the same
-        ComparisonEntity entityDB = repository.findById(entity.getId());
+        Comparison entityDB = repository.findById(entity.getId());
         assertThat(entityDB, notNullValue());
         assertThat(entity.getId(), equalTo(entityDB.getId()));
     }
@@ -86,7 +86,7 @@ public class ComparisonRepositoryTest {
     @Test(expected = ComparisonException.class)
     public void testPersistNullId(){
         //given a invalid comparison entity with id null
-        ComparisonEntity entity = ComparisonEntityBuilder.aInstance().id(null).build();
+        Comparison entity = ComparisonEntityBuilder.aInstance().id(null).build();
         //when persist the entity
         repository.persist(entity);
         //then should throw an exception

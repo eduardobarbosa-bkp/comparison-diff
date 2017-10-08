@@ -1,6 +1,6 @@
 package com.ebc.waes.diff.web;
 
-import com.ebc.waes.diff.model.SourceEntity;
+import com.ebc.waes.diff.domain.dto.SourceDTO;
 import com.ebc.waes.diff.test.TextContent;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -41,24 +41,24 @@ public class ComparisonEndPointIT {
 
     @Test
     public void testAddDiffLeftSide() {
-        SourceEntity sourceEntity = new SourceEntity();
-        sourceEntity.setContent(TextContent.SIMPLE_TEXT_LEFT_CONTENT_BASE64);
+        SourceDTO source = new SourceDTO();
+        source.setContent(TextContent.SIMPLE_TEXT_LEFT_CONTENT_BASE64);
         Response response = target(PATH_DIFF_LEFT)
                 .resolveTemplate(ID_PARAM, ID_DIFF_VALUE)
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.entity(sourceEntity, MediaType.APPLICATION_JSON));
+                .post(Entity.entity(source, MediaType.APPLICATION_JSON));
         assertThat(response.getStatus(), equalTo(204));
     }
 
 
     @Test
     public void testAddDiffRightSide() {
-        SourceEntity sourceEntity = new SourceEntity();
-        sourceEntity.setContent(TextContent.SIMPLE_TEXT_RIGHT_CONTENT_BASE64);
+        SourceDTO source = new SourceDTO();
+        source.setContent(TextContent.SIMPLE_TEXT_RIGHT_CONTENT_BASE64);
         Response response = target(PATH_DIFF_RIGHT)
                 .resolveTemplate(ID_PARAM, ID_DIFF_VALUE)
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.entity(sourceEntity, MediaType.APPLICATION_JSON));
+                .post(Entity.entity(source, MediaType.APPLICATION_JSON));
         assertThat(response.getStatus(), equalTo(204));
 
     }

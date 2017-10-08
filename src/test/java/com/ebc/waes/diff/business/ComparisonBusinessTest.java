@@ -1,9 +1,10 @@
 package com.ebc.waes.diff.business;
 
 import com.ebc.waes.diff.builder.ComparisonEntityBuilder;
+import com.ebc.waes.diff.domain.dto.SourceDTO;
 import com.ebc.waes.diff.exception.ComparisonException;
-import com.ebc.waes.diff.model.ComparisonEntity;
-import com.ebc.waes.diff.model.DifferEntity;
+import com.ebc.waes.diff.domain.Comparison;
+import com.ebc.waes.diff.domain.dto.ComparisonDiffDTO;
 import com.ebc.waes.diff.repository.ComparisonRepository;
 import com.ebc.waes.diff.test.TextContent;
 import org.junit.Before;
@@ -12,12 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.verification.Times;
 
+import java.util.Base64;
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.any;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -28,7 +29,6 @@ import static org.junit.Assert.assertThat;
 public class ComparisonBusinessTest {
 
     private static final String ID_NOT_FOUND = UUID.randomUUID().toString();
-    private static final String ID_VALID = UUID.randomUUID().toString();
     @InjectMocks
     private ComparisonBusiness business;
     @Mock
@@ -43,20 +43,67 @@ public class ComparisonBusinessTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         Mockito.doReturn(null).when(repository).findById(ID_NOT_FOUND);
-        ComparisonEntity entity = ComparisonEntityBuilder.aInstance().id(ID_VALID)
-                .left(TextContent.SIMPLE_TEXT_LEFT_CONTENT_BASE64)
-                .right(TextContent.SIMPLE_TEXT_RIGHT_CONTENT_BASE64)
-                .build();
-        Mockito.doReturn(entity).when(repository).findById(ID_VALID);
+
+    }
+
+    private void mockComparisonEntityResult( Comparison entity) {
+        Mockito.doReturn(entity).when(repository).findById(entity.getId());
     }
 
     @Test
-    public void testGetDiffResultsValid() {
+    public void testGetDiffResults() {
         //given an id that match with a comparison
+        Comparison entity = ComparisonEntityBuilder.aInstance().id(UUID.randomUUID().toString())
+                .left(TextContent.SIMPLE_TEXT_LEFT_CONTENT_BASE64)
+                .right(TextContent.SIMPLE_TEXT_RIGHT_CONTENT_BASE64)
+                .build();
+        mockComparisonEntityResult(entity);
         //when call getDiffResults
-        DifferEntity entity = business.getDiffResults(ID_VALID);
+        ComparisonDiffDTO diff = business.getDiffResults(entity.getId());
         //then return the diffs between the left and left side
-        assertThat(entity, notNullValue());
+        assertThat(diff, notNullValue());
+        assertThat(diff.getLeft(), equalTo(TextContent.SIMPLE_TEXT_LEFT_CONTENT_PLAN));
+        assertThat(diff.getRight(), equalTo(TextContent.SIMPLE_TEXT_RIGHT_CONTENT_PLAN));
+        assertThat(diff.getDiffs(), equalTo(TextContent.DIFF_LEFT_TO_RIGHT));
+        assertThat(diff.getModifications(), equalTo(TextContent.MODIFICATIONS_LEFT_TO_RIGHT));
+    }
+
+    @Test
+    public void testGetDiffResultsWithEqualContent() {
+        //given an id that match with a comparison with the same content in left and right side
+        Comparison entity = ComparisonEntityBuilder.aInstance().id(UUID.randomUUID().toString())
+                .left(TextContent.SIMPLE_TEXT_CONTENT_BASE64)
+                .right(TextContent.SIMPLE_TEXT_CONTENT_BASE64)
+                .build();
+        mockComparisonEntityResult(entity);
+        //when call getDiffResults
+        ComparisonDiffDTO diff = business.getDiffResults(entity.getId());
+        //then return no diffs between the left and left side
+        assertThat(diff, notNullValue());
+        assertThat(diff.getLeft(), equalTo(TextContent.SIMPLE_TEXT_CONTENT_PLAN));
+        assertThat(diff.getRight(), equalTo(TextContent.SIMPLE_TEXT_CONTENT_PLAN));
+        assertThat(diff.getDiffs(), nullValue());
+        assertThat(diff.getModifications(), equalTo(0));
+    }
+
+    @Test
+    public void testGetDiffResultsWithDifferentSize() {
+        //given an id that match with a comparison with the content in left and right side with different size
+        String left = "12345";
+        String right = "123456";
+        Comparison entity = ComparisonEntityBuilder.aInstance().id(UUID.randomUUID().toString())
+                .left(Base64.getEncoder().encodeToString(left.getBytes()))
+                .right(Base64.getEncoder().encodeToString(right.getBytes()))
+                .build();
+        mockComparisonEntityResult(entity);
+        //when call getDiffResults
+        ComparisonDiffDTO diff = business.getDiffResults(entity.getId());
+        //then just return the left and left side
+        assertThat(diff, notNullValue());
+        assertThat(diff.getLeft(), equalTo(left));
+        assertThat(diff.getRight(), equalTo(right));
+        assertThat(diff.getDiffs(), nullValue());
+        assertThat(diff.getModifications(), nullValue());
     }
 
     @Test(expected = ComparisonException.class)
@@ -70,19 +117,23 @@ public class ComparisonBusinessTest {
     @Test
     public void testSetDiffRightSide() {
         //given a valid comparison entity
-        ComparisonEntity entity = ComparisonEntityBuilder.aInstance().build();
+        Comparison entity = ComparisonEntityBuilder.aInstance().build();
         //when call setDiffLeftSide
-        business.setDiffLeftSide(entity.getId(), entity.getLeft());
+        SourceDTO source = new SourceDTO();
+        source.setContent(entity.getLeft());
+        business.setDiffLeftSide(entity.getId(), source);
         //then call the repository to persist the comparison
         Mockito.verify(repository, Mockito.times(1)).persist(entity);
     }
 
     @Test
     public void testSetDiffLeftSide() {
-//given a valid comparison entity
-        ComparisonEntity entity = ComparisonEntityBuilder.aInstance().build();
+        //given a valid comparison entity
+        Comparison entity = ComparisonEntityBuilder.aInstance().build();
         //when call setDiffRightSide
-        business.setDiffRightSide(entity.getId(), entity.getRight());
+        SourceDTO source = new SourceDTO();
+        source.setContent(entity.getRight());
+        business.setDiffRightSide(entity.getId(), source);
         //then call the repository to persist the comparison
         Mockito.verify(repository, Mockito.times(1)).persist(entity);
     }

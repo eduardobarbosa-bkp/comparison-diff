@@ -1,8 +1,8 @@
 package com.ebc.waes.diff.web;
 
 import com.ebc.waes.diff.business.ComparisonBusiness;
-import com.ebc.waes.diff.model.DifferEntity;
-import com.ebc.waes.diff.model.SourceEntity;
+import com.ebc.waes.diff.domain.dto.ComparisonDiffDTO;
+import com.ebc.waes.diff.domain.dto.SourceDTO;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -25,33 +25,33 @@ public class ComparisonEndPoint {
     /**
      * Add the left side of a comparison
      * @param id the identifier of a comparison
-     * @param sourceEntity the {@link SourceEntity} bind by json with the content data Base64 encoded
+     * @param source the {@link SourceDTO} bind by json with the content data Base64 encoded
      */
     @POST
     @Path("/{id}/left")
-    public void addDiffLeftSide(@PathParam("id") String id, SourceEntity sourceEntity){
-       business.setDiffLeftSide(id, sourceEntity);
+    public void addDiffLeftSide(@PathParam("id") String id, SourceDTO source){
+       business.setDiffLeftSide(id, source);
     }
 
     /**
      * Add the right side of a comparison
      * @param id the identifier of a comparison
-     * @param sourceEntity the {@link SourceEntity} json with the content data base64 encoded
+     * @param source the {@link SourceDTO} json with the content data base64 encoded
      */
     @POST
     @Path("/{id}/right")
-    public void addDiffRightSide(@PathParam("id") String id, SourceEntity sourceEntity){
-        business.setDiffRightSide(id, sourceEntity);
+    public void addDiffRightSide(@PathParam("id") String id, SourceDTO source){
+        business.setDiffRightSide(id, source);
     }
 
     /**
      * Provide the result of a comparison of the left and right side content
      * @param id the identifier of a comparison
-     * @return the {@link DifferEntity} with the diffs results
+     * @return the {@link ComparisonDiffDTO} with the diffs results
      */
     @GET
     @Path("/{id}")
-    public DifferEntity provideDiffResults(@PathParam("id") String id){
+    public ComparisonDiffDTO provideDiffResults(@PathParam("id") String id){
         return business.getDiffResults(id);
     }
 

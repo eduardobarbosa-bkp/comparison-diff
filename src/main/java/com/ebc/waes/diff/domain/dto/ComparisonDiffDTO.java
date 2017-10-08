@@ -1,11 +1,11 @@
-package com.ebc.waes.diff.model;
+package com.ebc.waes.diff.domain.dto;
 
 /**
  * @version 1.0
  * @author eduardo.costa
  * @since 06/10/2017
  */
-public class DifferEntity {
+public class ComparisonDiffDTO {
 
     private String left;
 
@@ -49,7 +49,7 @@ public class DifferEntity {
 
     @Override
     public String toString() {
-        return "DifferEntity{" +
+        return "ComparisonDiffDTO{" +
                 "left='" + left + '\'' +
                 ", right='" + right + '\'' +
                 ", diffs='" + diffs + '\'' +

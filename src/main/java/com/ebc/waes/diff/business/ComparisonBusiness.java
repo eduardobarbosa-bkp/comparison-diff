@@ -1,9 +1,9 @@
 package com.ebc.waes.diff.business;
 
+import com.ebc.waes.diff.domain.dto.ComparisonDiffDTO;
 import com.ebc.waes.diff.exception.ComparisonException;
-import com.ebc.waes.diff.model.ComparisonEntity;
-import com.ebc.waes.diff.model.DifferEntity;
-import com.ebc.waes.diff.model.SourceEntity;
+import com.ebc.waes.diff.domain.Comparison;
+import com.ebc.waes.diff.domain.dto.SourceDTO;
 import com.ebc.waes.diff.repository.ComparisonRepository;
 import com.ebc.waes.diff.util.ComparisonUtils;
 import org.apache.commons.text.diff.CommandVisitor;
@@ -29,23 +29,22 @@ public class ComparisonBusiness {
      * Perform the comparison of the left and right side content,
      * as result provide the diffs between the left and right
      * @param id the identifier of a comparison
-     * @return the {@link DifferEntity} with the diffs values
+     * @return the {@link ComparisonDiffDTO} with the diffs values
      */
-    public DifferEntity getDiffResults(String id) {
-        ComparisonEntity entity  = repository.findById(id);
-        validateComparison(entity);
-        return performDiff(
-                ComparisonUtils.decodeBase64Text(entity.getLeft().getContent())
-                ,ComparisonUtils.decodeBase64Text(entity.getRight().getContent()));
+    public ComparisonDiffDTO getDiffResults(String id) {
+        Comparison comparison  = repository.findById(id);
+        validateComparison(comparison);
+        return performDiff(ComparisonUtils.decodeBase64Text(comparison.getLeft()),
+                            ComparisonUtils.decodeBase64Text(comparison.getRight()));
     }
 
-    private DifferEntity performDiff(String left, String right) {
-        DifferEntity differEntity = new DifferEntity();
+    private ComparisonDiffDTO performDiff(String left, String right) {
+        ComparisonDiffDTO comparisonDiff = new ComparisonDiffDTO();
+        comparisonDiff.setLeft(left);
+        comparisonDiff.setRight(right);
         //If not of equal size just return that
         if(left.length() != right.length()){
-            differEntity.setLeft(left);
-            differEntity.setRight(right);
-            return differEntity;
+            return comparisonDiff;
         }
         //If of same size provide insight in where the diffs are
         StringsComparator comparator = new StringsComparator(left, right);
@@ -53,11 +52,11 @@ public class ComparisonBusiness {
         DiffVisitor<Character> visitor = new DiffVisitor<>();
         script.visit(visitor);
 
-        differEntity.setLeft(left);
-        differEntity.setRight(right);
-        differEntity.setDiffs(visitor.getString());
-        differEntity.setModifications(script.getModifications());
-        return differEntity;
+        if(script.getModifications() > 0) {
+            comparisonDiff.setDiffs(visitor.getString());
+        }
+        comparisonDiff.setModifications(script.getModifications());
+        return comparisonDiff;
     }
 
     private class DiffVisitor<T> implements CommandVisitor<T> {
@@ -82,7 +81,7 @@ public class ComparisonBusiness {
         }
     }
 
-    private void validateComparison(ComparisonEntity entity) {
+    private void validateComparison(Comparison entity) {
         if(entity == null
                 || entity.getLeft() == null
                 ||  entity.getRight() == null ){
@@ -93,30 +92,30 @@ public class ComparisonBusiness {
     /**
      * Create or Update a comparison and set the right side of the content
      * @param id the identifier of a comparison
-     * @param sourceEntity the {@link SourceEntity} with the text Base64 encoded
+     * @param source the {@link SourceDTO} with the text Base64 encoded
      */
-    public void setDiffRightSide(String id, SourceEntity sourceEntity) {
-        ComparisonEntity entity = repository.findById(id);
+    public void setDiffRightSide(String id, SourceDTO source) {
+        Comparison entity = repository.findById(id);
         if(entity == null){
-            entity = new ComparisonEntity();
+            entity = new Comparison();
             entity.setId(id);
         }
-        entity.setRight(sourceEntity);
+        entity.setRight(source.getContent());
         repository.persist(entity);
     }
 
     /**
      * Create or Update a comparison and set the left side of the content
      * @param id the identifier of a comparison
-     * @param sourceEntity the {@link SourceEntity} with the text Base64 encoded
+     * @param source the {@link SourceDTO} with the text Base64 encoded
      */
-    public void setDiffLeftSide(String id, SourceEntity sourceEntity) {
-        ComparisonEntity entity = repository.findById(id);
+    public void setDiffLeftSide(String id, SourceDTO source) {
+        Comparison entity = repository.findById(id);
         if(entity == null){
-            entity = new ComparisonEntity();
+            entity = new Comparison();
             entity.setId(id);
         }
-        entity.setLeft(sourceEntity);
+        entity.setLeft(source.getContent());
         repository.persist(entity);
     }
 }

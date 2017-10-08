@@ -1,11 +1,11 @@
-package com.ebc.waes.diff.model;
+package com.ebc.waes.diff.domain.dto;
 
 /**
  * @version 1.0
  * @author eduardo.costa
  * @since 06/10/2017
  */
-public class SourceEntity {
+public class SourceDTO{
 
     private String content;
 
@@ -19,7 +19,7 @@ public class SourceEntity {
 
     @Override
     public String toString() {
-        return "SourceEntity{" +
+        return "SourceDTO{" +
                 "content='" + content + '\'' +
                 '}';
     }

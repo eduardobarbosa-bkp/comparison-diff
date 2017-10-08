@@ -9,10 +9,12 @@ import java.util.Base64;
  */
 public interface TextContent {
 
-    String SIMPLE_TEXT_CONTENT_PLAN = "Analyzes two files and show the lines that are different.";
+    String SIMPLE_TEXT_CONTENT_PLAN = "Developer/Tester";
     String SIMPLE_TEXT_CONTENT_BASE64 = Base64.getEncoder().encodeToString(SIMPLE_TEXT_CONTENT_PLAN.getBytes());
-    String SIMPLE_TEXT_LEFT_CONTENT_PLAN = "Analyzes two files and show the lines that are different.LEFT";
+    String SIMPLE_TEXT_LEFT_CONTENT_PLAN = "Developer/Tester";
     String SIMPLE_TEXT_LEFT_CONTENT_BASE64 = Base64.getEncoder().encodeToString(SIMPLE_TEXT_LEFT_CONTENT_PLAN.getBytes());
-    String SIMPLE_TEXT_RIGHT_CONTENT_PLAN = "Analyzes two files and show the lines that are different.RIGHT";
+    String SIMPLE_TEXT_RIGHT_CONTENT_PLAN = "Developer/Leader";
     String SIMPLE_TEXT_RIGHT_CONTENT_BASE64 = Base64.getEncoder().encodeToString(SIMPLE_TEXT_RIGHT_CONTENT_PLAN.getBytes());
+    int MODIFICATIONS_LEFT_TO_RIGHT = 6;
+    String DIFF_LEFT_TO_RIGHT  = "Developer/+L-Te+a+d-s-ter";
 }

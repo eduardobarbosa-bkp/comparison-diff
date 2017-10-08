@@ -1,18 +1,21 @@
-package com.ebc.waes.diff.model;
+package com.ebc.waes.diff.domain;
+
+import java.io.Serializable;
 
 /**
  * @version 1.0
  * @author eduardo.costa
  * @since 06/10/2017
  */
-public class ComparisonEntity{
+public class Comparison implements Serializable {
+
+    private static final long serialVersionUID = -2867576428436227967L;
 
     private String id;
 
-    private SourceEntity left;
+    private String left;
 
-    private SourceEntity right;
-
+    private String right;
 
     public String getId() {
         return id;
@@ -22,29 +25,28 @@ public class ComparisonEntity{
         this.id = id;
     }
 
-    public SourceEntity getLeft() {
+    public String getLeft() {
         return left;
     }
 
-    public void setLeft(SourceEntity left) {
+    public void setLeft(String left) {
         this.left = left;
     }
 
-    public SourceEntity getRight() {
+    public String getRight() {
         return right;
     }
 
-    public void setRight(SourceEntity right) {
+    public void setRight(String right) {
         this.right = right;
     }
-
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ComparisonEntity that = (ComparisonEntity) o;
+        Comparison that = (Comparison) o;
 
         return id.equals(that.id);
 
@@ -57,10 +59,16 @@ public class ComparisonEntity{
 
     @Override
     public String toString() {
-        return "ComparisonEntity{" +
+        return "Comparison{" +
                 "id='" + id + '\'' +
                 ", left=" + left +
                 ", right=" + right +
                 '}';
+    }
+
+    public Comparison decode() {
+
+
+        return null;
     }
 }

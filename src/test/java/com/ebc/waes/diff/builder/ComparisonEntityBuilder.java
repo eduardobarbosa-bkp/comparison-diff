@@ -1,17 +1,12 @@
 package com.ebc.waes.diff.builder;
 
-import com.ebc.waes.diff.model.ComparisonEntity;
-import com.ebc.waes.diff.model.DifferEntity;
-import com.ebc.waes.diff.model.SourceEntity;
+import com.ebc.waes.diff.domain.Comparison;
 import com.ebc.waes.diff.test.TextContent;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
- * This class is a builder responsible to build a new instance of {@link ComparisonEntity} for using in test cases
+ * This class is a builder responsible to build a new instance of {@link Comparison} for using in test cases
  * @version 1.0
  * @author eduardo.costa
  * @since 06/10/2017
@@ -46,15 +41,11 @@ public class ComparisonEntityBuilder {
         return this;
     }
 
-    public ComparisonEntity build() {
-        ComparisonEntity entity = new ComparisonEntity();
+    public Comparison build() {
+        Comparison entity = new Comparison();
         entity.setId(id);
-        SourceEntity sourceEntityLeft = new SourceEntity();
-        sourceEntityLeft.setContent(left);
-        entity.setLeft(sourceEntityLeft);
-        SourceEntity sourceEntityRight = new SourceEntity();
-        sourceEntityRight.setContent(right);
-        entity.setRight(sourceEntityRight);
+        entity.setLeft(left);
+        entity.setRight(right);
         return entity;
     }
 
