@@ -1,4 +1,4 @@
-# waes assignment Eduardo Barbosa da Costa
+# Comparison diff - Eduardo Barbosa da Costa
 
 ***Setup***
 * Java 8 and apache-maven 3.3.x;
