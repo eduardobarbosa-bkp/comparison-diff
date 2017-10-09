@@ -37,4 +37,32 @@ GET
 - diffs: insight of the diffs with sign [+] before an addition and [-] before a remove
 
 
-
+ex. Comparison of Developer/Tester and Developer/Leader
+```
+curl -X POST \
+  http://localhost:8080/v1/diff/1/left \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -d '{
+	"content": "RGV2ZWxvcGVyL0xlYWRlcg=="
+}'
+```
+```
+curl -X POST \
+  http://localhost:8080/v1/diff/1/right \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -d '{
+	"content": "RGV2ZWxvcGVyL1Rlc3Rlcg=="
+}'
+```
+```
+curl -X GET \
+  http://localhost:8080/v1/diff/1 \
+  -H 'cache-control: no-cache'
+```
+```javascript
+{
+    "diffs": "Developer/[+]T[-]Le[+]s[+]t[-]a[-]der"
+}
+```
