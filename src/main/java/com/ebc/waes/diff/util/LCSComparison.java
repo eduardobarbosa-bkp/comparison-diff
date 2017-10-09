@@ -1,5 +1,7 @@
 package com.ebc.waes.diff.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 
 /**
@@ -25,6 +27,10 @@ public class LCSComparison {
      * @return a String with the changes to the left to turn in the right
      */
     public String performDiff(){
+        if(StringUtils.isEmpty(left)
+                || StringUtils.isEmpty(right)){
+            return null;
+        }
         left = normalizeText(left);
         right = normalizeText(right);
         ArrayList<String> lcsList = lcs(left, right);
