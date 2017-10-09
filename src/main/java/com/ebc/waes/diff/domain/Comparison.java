@@ -1,5 +1,8 @@
 package com.ebc.waes.diff.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -7,14 +10,18 @@ import java.io.Serializable;
  * @author eduardo.costa
  * @since 06/10/2017
  */
+@Entity
 public class Comparison implements Serializable {
 
     private static final long serialVersionUID = -2867576428436227967L;
 
+    @Id
     private String id;
 
+    @Column(length = 5000)
     private String left;
 
+    @Column(length = 5000)
     private String right;
 
     public String getId() {

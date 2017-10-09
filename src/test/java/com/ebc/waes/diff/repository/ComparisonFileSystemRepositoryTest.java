@@ -4,6 +4,7 @@ import com.ebc.waes.diff.builder.ComparisonEntityBuilder;
 import com.ebc.waes.diff.config.Configuration;
 import com.ebc.waes.diff.exception.ComparisonException;
 import com.ebc.waes.diff.domain.Comparison;
+import com.ebc.waes.diff.repository.impl.ComparisonFileSystemRepository;
 import com.ebc.waes.diff.test.TextContent;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -23,9 +24,9 @@ import static org.junit.Assert.assertThat;
  * @author eduardo.costa
  * @since 06/10/2017
  */
-public class ComparisonRepositoryTest {
+public class ComparisonFileSystemRepositoryTest {
 
-    private ComparisonRepository repository = new ComparisonRepository();
+    private ComparisonFileSystemRepository repository = new ComparisonFileSystemRepository();
 
     private static final String ID_NOT_FOUND = UUID.randomUUID().toString();
 

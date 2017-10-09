@@ -1,11 +1,12 @@
 package com.ebc.waes.diff.business;
 
-import com.ebc.waes.diff.domain.dto.ComparisonDiffDTO;
-import com.ebc.waes.diff.exception.ComparisonException;
 import com.ebc.waes.diff.domain.Comparison;
+import com.ebc.waes.diff.domain.dto.ComparisonDiffDTO;
 import com.ebc.waes.diff.domain.dto.SourceDTO;
+import com.ebc.waes.diff.exception.ComparisonException;
 import com.ebc.waes.diff.repository.ComparisonRepository;
 import com.ebc.waes.diff.util.ComparisonUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.diff.CommandVisitor;
 import org.apache.commons.text.diff.EditScript;
 import org.apache.commons.text.diff.StringsComparator;
@@ -40,22 +41,11 @@ public class ComparisonBusiness {
 
     private ComparisonDiffDTO performDiff(String left, String right) {
         ComparisonDiffDTO comparisonDiff = new ComparisonDiffDTO();
-        comparisonDiff.setLeft(left);
-        comparisonDiff.setRight(right);
-        //If not of equal size just return that
-        if(left.length() != right.length()){
-            return comparisonDiff;
-        }
-        //If of same size provide insight in where the diffs are
         StringsComparator comparator = new StringsComparator(left, right);
         EditScript<Character> script = comparator.getScript();
         DiffVisitor<Character> visitor = new DiffVisitor<>();
         script.visit(visitor);
-
-        if(script.getModifications() > 0) {
-            comparisonDiff.setDiffs(visitor.getString());
-        }
-        comparisonDiff.setModifications(script.getModifications());
+        comparisonDiff.setDiffs(visitor.getString());
         return comparisonDiff;
     }
 
@@ -66,7 +56,7 @@ public class ComparisonBusiness {
         }
         @Override
         public void visitInsertCommand(final T object) {
-            builder.append("+"+object);
+            builder.append("[+]"+object);
         }
         @Override
         public void visitKeepCommand(final T object) {
@@ -74,7 +64,7 @@ public class ComparisonBusiness {
         }
         @Override
         public void visitDeleteCommand(final T object) {
-            builder.append("-"+object);
+            builder.append("[-]"+object);
         }
         public String getString() {
             return builder.toString();
@@ -83,8 +73,8 @@ public class ComparisonBusiness {
 
     private void validateComparison(Comparison entity) {
         if(entity == null
-                || entity.getLeft() == null
-                ||  entity.getRight() == null ){
+                || StringUtils.isEmpty(entity.getLeft())
+                || StringUtils.isEmpty(entity.getRight()) ){
             throw new ComparisonException("The left and the right content must be provided!");
         }
     }

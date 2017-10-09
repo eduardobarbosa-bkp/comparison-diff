@@ -5,7 +5,7 @@ import com.ebc.waes.diff.domain.dto.SourceDTO;
 import com.ebc.waes.diff.exception.ComparisonException;
 import com.ebc.waes.diff.domain.Comparison;
 import com.ebc.waes.diff.domain.dto.ComparisonDiffDTO;
-import com.ebc.waes.diff.repository.ComparisonRepository;
+import com.ebc.waes.diff.repository.impl.ComparisonFileSystemRepository;
 import com.ebc.waes.diff.test.TextContent;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class ComparisonBusinessTest {
     @InjectMocks
     private ComparisonBusiness business;
     @Mock
-    private ComparisonRepository repository;
+    private ComparisonFileSystemRepository repository;
 
     @Test(expected = ComparisonException.class)
     public void testGetDiffResultsWithoutSetFiles() {
@@ -62,10 +62,7 @@ public class ComparisonBusinessTest {
         ComparisonDiffDTO diff = business.getDiffResults(entity.getId());
         //then return the diffs between the left and left side
         assertThat(diff, notNullValue());
-        assertThat(diff.getLeft(), equalTo(TextContent.SIMPLE_TEXT_LEFT_CONTENT_PLAN));
-        assertThat(diff.getRight(), equalTo(TextContent.SIMPLE_TEXT_RIGHT_CONTENT_PLAN));
         assertThat(diff.getDiffs(), equalTo(TextContent.DIFF_LEFT_TO_RIGHT));
-        assertThat(diff.getModifications(), equalTo(TextContent.MODIFICATIONS_LEFT_TO_RIGHT));
     }
 
     @Test
@@ -80,30 +77,7 @@ public class ComparisonBusinessTest {
         ComparisonDiffDTO diff = business.getDiffResults(entity.getId());
         //then return no diffs between the left and left side
         assertThat(diff, notNullValue());
-        assertThat(diff.getLeft(), equalTo(TextContent.SIMPLE_TEXT_CONTENT_PLAN));
-        assertThat(diff.getRight(), equalTo(TextContent.SIMPLE_TEXT_CONTENT_PLAN));
-        assertThat(diff.getDiffs(), nullValue());
-        assertThat(diff.getModifications(), equalTo(0));
-    }
-
-    @Test
-    public void testGetDiffResultsWithDifferentSize() {
-        //given an id that match with a comparison with the content in left and right side with different size
-        String left = "12345";
-        String right = "123456";
-        Comparison entity = ComparisonEntityBuilder.aInstance().id(UUID.randomUUID().toString())
-                .left(Base64.getEncoder().encodeToString(left.getBytes()))
-                .right(Base64.getEncoder().encodeToString(right.getBytes()))
-                .build();
-        mockComparisonEntityResult(entity);
-        //when call getDiffResults
-        ComparisonDiffDTO diff = business.getDiffResults(entity.getId());
-        //then just return the left and left side
-        assertThat(diff, notNullValue());
-        assertThat(diff.getLeft(), equalTo(left));
-        assertThat(diff.getRight(), equalTo(right));
-        assertThat(diff.getDiffs(), nullValue());
-        assertThat(diff.getModifications(), nullValue());
+        assertThat(diff.getDiffs(), equalTo(TextContent.SIMPLE_TEXT_CONTENT_PLAN));
     }
 
     @Test(expected = ComparisonException.class)

@@ -30,16 +30,11 @@ GET
 *response json format*
 ```javascript
 {
-  "left": "",
-  "right": "",
-  "diffs": "",
-  "modifications": ""
+  "diffs": ""
 }
 ```
-- left: text plan of the left side
-- right: text plan of the right side
-- diffs: insight of the diffs with sign (+) before an addition and (-) before a remove
-- modifications: number of operations
+
+- diffs: insight of the diffs with sign [+] before an addition and [-] before a remove
 
 
 

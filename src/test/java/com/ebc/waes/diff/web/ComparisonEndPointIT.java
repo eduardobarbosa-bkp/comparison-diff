@@ -26,6 +26,7 @@ import javax.json.JsonReader;
 import javax.ws.rs.core.MediaType;
 import java.io.StringReader;
 import java.net.URISyntaxException;
+import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -38,9 +39,10 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class ComparisonEndPointIT {
 
-    public static final String PATH_DIFF_LEFT = "/diff/24/left";
-    public static final String PATH_DIFF_RIGHT = "/diff/24/right";
-    public static final String PATH_DIFF_RESULT = "/diff/24";
+    public static final String ID = UUID.randomUUID().toString();
+    public static final String PATH_DIFF_LEFT = "/diff/"+ID+"/left";
+    public static final String PATH_DIFF_RIGHT = "/diff/"+ID+"/right";
+    public static final String PATH_DIFF_RESULT = "/diff/"+ID;
     public static final String JSON_LEFT = "{\"content\": \"" + TextContent.SIMPLE_TEXT_LEFT_CONTENT_BASE64 + "\"}";
     public static final String JSON_RIGHT = "{\"content\": \"" + TextContent.SIMPLE_TEXT_RIGHT_CONTENT_BASE64 + "\"}";
 
@@ -55,6 +57,8 @@ public class ComparisonEndPointIT {
                 .addPackages(true, "com.ebc.waes.diff")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsResource("diff.properties", "diff.properties")
+                .addAsResource("META-INF/persistence.xml", "META-INF/persistence.xml")
+                .addAsResource("project-defaults.yml", "project-defaults.yml")
                 .addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").importRuntimeDependencies().resolve().withTransitivity().asFile());
         return webArchive;
     }
@@ -98,10 +102,7 @@ public class ComparisonEndPointIT {
         String jsonString = response.getContentAsString();
         JsonReader reader = Json.createReader(new StringReader(jsonString));
         JsonObject jsonObject = reader.readObject();
-        assertThat(jsonObject.getString("left"), equalTo(TextContent.SIMPLE_TEXT_LEFT_CONTENT_PLAN));
-        assertThat(jsonObject.getString("right"), equalTo(TextContent.SIMPLE_TEXT_RIGHT_CONTENT_PLAN));
         assertThat(jsonObject.getString("diffs"), equalTo(TextContent.DIFF_LEFT_TO_RIGHT));
-        assertThat(jsonObject.getInt("modifications"), equalTo(TextContent.MODIFICATIONS_LEFT_TO_RIGHT));
     }
 
     private Dispatcher createDispatcher() {
