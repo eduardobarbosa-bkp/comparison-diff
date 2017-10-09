@@ -6,10 +6,8 @@ import com.ebc.waes.diff.domain.dto.SourceDTO;
 import com.ebc.waes.diff.exception.ComparisonException;
 import com.ebc.waes.diff.repository.ComparisonRepository;
 import com.ebc.waes.diff.util.ComparisonUtils;
+import com.ebc.waes.diff.util.LCSComparison;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.diff.CommandVisitor;
-import org.apache.commons.text.diff.EditScript;
-import org.apache.commons.text.diff.StringsComparator;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -41,34 +39,9 @@ public class ComparisonBusiness {
 
     private ComparisonDiffDTO performDiff(String left, String right) {
         ComparisonDiffDTO comparisonDiff = new ComparisonDiffDTO();
-        StringsComparator comparator = new StringsComparator(left, right);
-        EditScript<Character> script = comparator.getScript();
-        DiffVisitor<Character> visitor = new DiffVisitor<>();
-        script.visit(visitor);
-        comparisonDiff.setDiffs(visitor.getString());
+        LCSComparison lcsComparison = new LCSComparison(left, right);
+        comparisonDiff.setDiffs(lcsComparison.performDiff());
         return comparisonDiff;
-    }
-
-    private class DiffVisitor<T> implements CommandVisitor<T> {
-        private final StringBuilder builder;
-        public DiffVisitor() {
-            builder = new StringBuilder();
-        }
-        @Override
-        public void visitInsertCommand(final T object) {
-            builder.append("[+]"+object);
-        }
-        @Override
-        public void visitKeepCommand(final T object) {
-            builder.append(object);
-        }
-        @Override
-        public void visitDeleteCommand(final T object) {
-            builder.append("[-]"+object);
-        }
-        public String getString() {
-            return builder.toString();
-        }
     }
 
     private void validateComparison(Comparison entity) {
